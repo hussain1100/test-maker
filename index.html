@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>مُنشئ اختبار — للنشر في بلوجر</title>
+  <style>
+    :root{--blue:#0b66ff;--midblue:#0b5ae6;--soft:#f3f8ff;--white:#ffffff}
+    *{box-sizing:border-box;font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif}
+    body{margin:0;background:linear-gradient(180deg,var(--soft),#fff);color:#0b2340}
+    .wrap{max-width:980px;margin:28px auto;padding:20px;background:var(--white);border-radius:16px;box-shadow:0 10px 30px rgba(11,38,64,0.08)}
+    header{display:flex;gap:16px;align-items:center}
+    .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--blue),var(--midblue));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:20px}
+    h1{margin:0;font-size:20px}
+    p.lead{margin:6px 0 18px;color:#234}
+
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:18px}
+    .card{background:linear-gradient(180deg,#fff,#fbfdff);padding:14px;border-radius:12px;border:1px solid rgba(11,102,255,0.06)}
+
+    label.small{display:block;font-size:13px;color:#0b2340;margin-bottom:6px}
+    textarea,input,select{width:100%;padding:10px;border-radius:8px;border:1px solid #d7e6ff;background:#fff;font-size:14px}
+    textarea{min-height:320px;resize:vertical}
+    .row{display:flex;gap:10px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--blue);color:#fff;border:none;cursor:pointer}
+    .btn.secondary{background:transparent;color:var(--blue);border:1px solid rgba(11,102,255,0.14)}
+    .hint{font-size:13px;color:#445;text-align:right}
+    .output{white-space:pre-wrap;background:#0b102033;padding:10px;border-radius:8px;overflow:auto;font-family:monospace;font-size:13px}
+    .small-muted{font-size:12px;color:#567}
+    footer{margin-top:14px;font-size:13px;color:#567}
+
+    @media(max-width:980px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">Q</div>
+      <div>
+        <h1>مُنشئ اختبار — (مناسب للبلوجر)</h1>
+        <p class="lead">ألصق اختبارك بالأسفل بصيغة بسيطة، ثم اضبط الدرجات وخيارات النتيجة، واضغط "إنشاء" لتحصل على كود Google Apps Script جاهز أو كود HTML/JS قابل للنشر.</p>
+      </div>
+    </header>
+
+    <div class="grid" style="margin-top:16px;">
+      <div class="card">
+        <label class="small">1) ألصق الأسئلة هنا (أعطي أمثلة تحت)</label>
+        <textarea id="inputText" placeholder="مثال:\n1.الشخص الذي يعبد الله كأنه يراه وإن لم يكن يراه فان الله يراه يسمى:\nأ.المسلم\nب.المؤمن\nج.المحسن\nد.لاشيء مما ذكر\n
+2.ما هو مجموع 2 و 2؟\nأ.3\nب.4\nج.5\n
+أو يمكنك استخدام تنسيق مختصر:\nما هي عاصمة فرنسا؟ | باريس;لندن;روما | ب | 2\n\nحالة الإجابات النصية: ضع سطر الإجابة بعد السؤال يبدأ بـTEXT: ثم اكتب النص الصحيح\nمثال:\nضع تعريف الإيمان:\nTEXT: الإيمان هو ...\n"></textarea>
+
+        <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+          <div style="flex:1">
+            <label class="small">2) درجة موحدة لكل الأسئلة؟ (اترك 0 لاستخدام درجات فردية)</label>
+            <input id="uniformPoints" placeholder="مثلاً: 2" />
+          </div>
+          <div style="width:170px">
+            <label class="small">3) إظهار النتيجة فوراً بعد الاختبار؟</label>
+            <select id="showImmediately">
+              <option value="true">نعم - عرض النتيجة فوراً</option>
+              <option value="false">لا - لاحقاً أو بعد المراجعة</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+          <button class="btn" id="createBtn">إنشاء كود (Apps Script + تعليمات النشر)</button>
+          <button class="btn secondary" id="createHTML">إنشاء كود HTML/JS (اختبار مستقل)</button>
+          <button class="btn secondary" id="clearBtn">مسح</button>
+        </div>
+
+        <div style="margin-top:12px;">
+          <div class="small-muted">ملاحظات عن الصيغة المرنة:</div>
+          <ul class="small-muted">
+            <li>يُفهم تلقائياً الأسئلة المرقمة وما يليها من أسطر خيارات تبدأ بحروف (أ.,ب.,ج.,د. أو a. , b. , c.).</li>
+            <li>يمكنك أيضاً استخدام سطر واحد مفصول بـ |: &lt;السؤال&gt; | خيار1;خيار2;خيار3 | حرف_الإجابة (أ/ب/ج/د أو a/b/c) | نقاط</li>
+            <li>للسؤال النصي ضع بعد السؤال سطر يبدأ بـ <code>TEXT:</code> ثم السطر التالي يحتوي الإجابة الصحيحة النصية.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <label class="small">النتيجة: كود جاهز للنسخ</label>
+        <div id="result" class="output" style="min-height:420px">اضغط "إنشاء" لتوليد الكود هنا...</div>
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button class="btn" id="copyBtn">نسخ إلى الحافظة</button>
+          <a id="downloadLink" style="text-decoration:none" class="btn secondary">تنزيل الملف</a>
+        </div>
+        <div style="margin-top:10px" class="hint">تعليمات سريعة للنشر على بلوجر: أنشئ تدوينة جديدة، غير إلى وضع HTML، الصق كود الـ HTML/JS (أو ضع الكود النصي كـ صور/ملف إذا اخترت Apps Script). راجع التفاصيل في النص الناتج.</div>
+      </div>
+    </div>
+
+    <footer>التصميم: أبيض و أزرق — مجاني 100% — يعمل داخل بلوجر كصفحة HTML أو كود داخل مشاركة. صمّم ليكون مرنًا في فهم أشكال الأسئلة.</footer>
+  </div>
+
+<script>
+// --- Parsing helper functions ---
+function trim(s){return s? s.trim():''}
+function isOptionLine(line){ // detects lines like 'أ.نص' or 'a) نص' or 'a. نص' or 'A. '
+  return /^[\u0621-\u06FFa-zA-Z]\s?[\.|\)|،|\-].*/.test(line) || /^[\u0621-\u06FFa-zA-Z]\.\s*/.test(line) || /^[abgdefghijklmnopqrstuvwxyzABCD].*/.test(line);
+}
+function startsWithLetterDot(line){return /^[\u0621-\u06FFA-Za-z]\s*[\.|\)]/.test(line)}
+
+function parseInput(text){
+  var lines = text.replace(/\r/g,'').split('\n');
+  var questions = [];
+  var i=0;
+  while(i<lines.length){
+    var line = trim(lines[i]);
+    if(!line){ i++; continue }
+    // If line contains '|' treat as compact entry
+    if(line.indexOf('|')!==-1){
+      var parts = line.split('|').map(trim);
+      var qtext = parts[0];
+      var choices = parts[1]? parts[1].split(';').map(trim):[];
+      var answerChar = parts[2]? parts[2].trim():'';
+      var points = parts[3]? parseFloat(parts[3]):0;
+      var correctIndex = -1;
+      if(answerChar){
+        var c = answerChar[0];
+        var map = {'أ':0,'ا':0,'a':0,'A':0,'ب':1,'b':1,'B':1,'ج':2,'c':2,'C':2,'د':3,'d':3,'D':3};
+        if(map[c]!==undefined) correctIndex=map[c];
+      }
+      questions.push({type: choices.length? 'mcq':'text', question:qtext, choices:choices, correctIndex:correctIndex, points: points});
+      i++; continue;
+    }
+
+    // Otherwise, this may be a numbered question line or plain question
+    // detect question line (starts with number + dot) or plain text.
+    var qLine = line;
+    // If numbered like '1.' remove number
+    var m = qLine.match(/^\d+\.?\s*(.*)$/);
+    if(m) qLine = m[1];
+
+    var q = {type:'mcq', question:qLine, choices:[], correctIndex:-1, points:0};
+    i++;
+    // gather subsequent option lines or TEXT: lines
+    while(i<lines.length){
+      var nxt = trim(lines[i]);
+      if(!nxt){ i++; continue }
+      // If next line looks like the start of another question (numbered) stop
+      if(/^\d+\.?\s+/.test(nxt)) break;
+      // If compact single-line for next question - break
+      if(nxt.indexOf('|')!==-1) break;
+      // Text answer marker
+      if(nxt.toUpperCase().startsWith('TEXT:')){
+        var ans = nxt.substring(5).trim();
+        if(!ans){ // next physical line is the answer
+          i++; if(i<lines.length){ ans = trim(lines[i]); }
+        }
+        q.type='text'; q.answerText = ans; i++; break;
+      }
+      // Option line detection
+      if(startsWithLetterDot(nxt) || /^[\u0621-\u06FF]\./.test(nxt) || /^[a-zA-Z]\./.test(nxt) || /^[أابجدة]\./.test(nxt) || /^[A-Za-z]\)/.test(nxt)){
+        // extract the option text after a punctuation
+        var opt = nxt.replace(/^[\u0621-\u06FFA-Za-z]\s*[\.|\)|\-|،|:]/,'').trim();
+        // If option also has marker '✔' or '(✓)' treat it as correct
+        var correct = /[✓✔\(صح\)]/.test(nxt);
+        q.choices.push(opt);
+        if(correct) q.correctIndex = q.choices.length-1;
+        i++; continue;
+      }
+      // If line is single Arabic letters like 'أ' or 'ب: ...' handle
+      if(/^[أابجدة]\s*[:\.]/.test(nxt)){
+        var opt = nxt.replace(/^[أابجدة]\s*[:\.]/,'').trim(); q.choices.push(opt); i++; continue;
+      }
+      // If reached a likely new question (short line without option punctuation) treat as next question
+      // but to be flexible, if q has no choices yet and nxt not numbered, maybe it's a continuation of the question
+      if(q.choices.length===0){ q.question += ' ' + nxt; i++; continue }
+      break;
+    }
+    questions.push(q);
+  }
+  return questions;
+}
+
+function normalizeCorrectIndexes(questions){
+  // If any MCQ has no correctIndex but a choice contains ✔ or the user used a separate line like 'Answer: ب' — try scanning for such patterns
+  questions.forEach(function(q){
+    if(q.type==='mcq' && q.correctIndex===-1){
+      // scan question text or choices for patterns like 'Answer: ب' or 'الإجابة: ب'
+      var m = q.question.match(/(?:الإجابة|Answer|Ans)[:\s]*([أابجدABCDabcda-zA-Z])/i);
+      if(m){ var map={'أ':0,'ا':0,'a':0,'A':0,'ب':1,'b':1,'B':1,'ج':2,'c':2,'C':2,'د':3,'d':3}; if(map[m[1]]!==undefined) q.correctIndex=map[m[1]]; }
+    }
+  });
+}
+
+// --- Code generation for Google Apps Script ---
+function generateAppsScript(questions, uniformPoints, immediateRelease){
+  // Build an array literal string for rawQuestions used earlier in example
+  var arrLines = [];
+  questions.forEach(function(q, idx){
+    if(q.type==='mcq'){
+      var choices = q.choices.map(function(c){ return c.replace(/"/g,'\\"'); }).join(';');
+      var correctIdx = (q.correctIndex>=0)? q.correctIndex : 0;
+      var pts = (uniformPoints>0)? uniformPoints : (q.points || 1);
+      arrLines.push('"'+q.question.replace(/"/g,'\\"') + ' | ' + choices + ' | ' + correctIdx + ' | ' + pts + '"');
+    } else {
+      // text
+      var ans = (q.answerText||'').replace(/"/g,'\\"');
+      var pts = (uniformPoints>0)? uniformPoints : (q.points || 1);
+      arrLines.push('"' + q.question.replace(/"/g,'\\"') + ' | TEXT:' + ans + ' | ' + ' | ' + pts + '"');
+    }
+  });
+
+  var arrBlock = arrLines.join(',\n    ');
+
+  var releaseSetting = immediateRelease? 'FormApp.QuizReleaseType.IMMEDIATE' : 'FormApp.QuizReleaseType.MANUAL';
+
+  var script = `/**\n * Google Apps Script generated by Quiz Creator (paste into script.google.com)\n * بعد اللصق: شغّل الدالة createQuizFromText ثم افتح الرابط في سجلات التشغيل Logs للحصول على رابط النموذج.\n */\nfunction createQuizFromText(){\n  // كل عنصر: "سؤال | خيار1;خيار2;... | indexOfCorrect (0-based) | points"\n  var rawQuestions = [\n    ${arrBlock}\n  ];\n\n  var form = FormApp.create('Quiz from Script');\n  form.setIsQuiz(true);\n  try{ form.setReleaseGrades(${releaseSetting}); } catch(e){} // setReleaseGrades may need manual setting in UI for some accounts\n\n  rawQuestions.forEach(function(line){\n    var parts = line.split('|').map(function(s){ return s.trim(); });\n    if(parts.length < 4) return;\n    var questionText = parts[0];\n    var choicesText = parts[1];\n    var correctIndex = parseInt(parts[2], 10);\n    var points = parseFloat(parts[3]) || 0;\n    if(choicesText && choicesText.indexOf('TEXT:')===0){\n      // سؤال نصي (Short answer)\n      var item = form.addTextItem();\n      item.setTitle(questionText);\n      var textItem = item.asTextItem();\n      // إعداد التقييم: تضع الإجابة الصحيحة كنقطة تلقائية عبر محرّر الأسئلة (غير مدعوم تمامًا برمجياً في بعض الحسابات)
+      try{\n        var feedback = FormApp.createFeedback().setText('تمت المراجعة');\n      }catch(e){}\n    } else {\n      var choices = choicesText.split(';').map(function(s){ return s.trim(); });\n      var item = form.addMultipleChoiceItem();\n      item.setTitle(questionText);\n      var createdChoices = choices.map(function(choice, idx){ return item.createChoice(choice, idx === correctIndex); });\n      item.setChoices(createdChoices);\n      try{ item.setPoints(points); }catch(e){}\n    }\n  });\n\n  Logger.log('Created quiz (open edit URL): ' + form.getEditUrl());\n}\n`;
+  return script;
+}
+
+function generateStandaloneHTML(questions, uniformPoints, immediateRelease){
+  // produce a single-file HTML quiz that shows results immediately (client-side)
+  var qarr = JSON.stringify(questions, null, 2);
+  var html = `<!doctype html>\n<html lang=\"ar\" dir=\"rtl\">\n<head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<title>اختبار</title>\n<style>body{font-family:Arial,\'Noto Naskh Arabic\',sans-serif;background:#f7fbff;color:#062035;padding:18px} .card{max-width:900px;margin:auto;background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 22px rgba(11,38,64,0.06)} h2{color:#083a9b} .q{margin-bottom:14px} .opt{display:block;margin:4px 0} .btn{background:#0b66ff;color:#fff;padding:8px 12px;border-radius:8px;border:none;cursor:pointer} .result{background:#f0f7ff;padding:12px;border-radius:8px;margin-top:12px}</style></head>\n<body><div class=\"card\"><h2>الاختبار</h2><form id=\"quizForm\">\n`;
+  var qlist = JSON.parse(qarr);
+  qlist.forEach(function(q,idx){
+    html += `<div class=\"q\"><div><strong>السؤال ${idx+1}:</strong> ${q.question}</div>`;
+    if(q.type==='mcq'){
+      q.choices.forEach(function(c,chIdx){
+        html += `<label class=\"opt\"><input type=\"radio\" name=\"q${idx}\" value=\"${chIdx}\"> ${c}</label>`;
+      });
+    } else {
+      html += `<textarea name=\"q${idx}\" placeholder=\"أكتب إجابتك هنا...\" style=\"width:100%;height:80px;border-radius:8px;border:1px solid #dde9ff;padding:8px\"></textarea>`;
+    }
+    html += `</div>`;
+  });
+  html += `<div style=\"margin-top:12px\"><button type=\"button\" class=\"btn\" id=\"submitBtn\">ارسال الاجابات</button></div></form><div id=\"res\"></div></div>\n<script>
+  var questions = ${qarr};
+  document.getElementById('submitBtn').addEventListener('click', function(){
+    var score=0, max=0, details=[];
+    questions.forEach(function(q,idx){
+      var pts = ${uniformPoints>0? uniformPoints : ' (q.points || 1) ' };
+      var qmax = ${uniformPoints>0? uniformPoints : 1}; max += qmax;
+      if(q.type==='mcq'){
+        var val = document.querySelector('input[name="q'+idx+'"]:checked');
+        var chosen = val? parseInt(val.value): -1;
+        if(chosen===q.correctIndex) score += qmax;
+        details.push({q: q.question, chosen: chosen, correct: q.correctIndex});
+      } else {
+        var val = document.querySelector('[name="q'+idx+'"]').value.trim();
+        // simple exact-match
+        if(val.length>0 && q.answerText && val===q.answerText) score += qmax;
+        details.push({q:q.question, given: val, correct: q.answerText});
+      }
+    });
+    var res = document.getElementById('res');
+    res.innerHTML = '<div class=\\"result\\">الدرجة: '+score+' من '+max+'\n</div>';
+    // show details collapsed
+  });
+</script></body></html>`;
+  return html;
+}
+
+// --- UI wiring ---
+var inputEl = document.getElementById('inputText');
+var createBtn = document.getElementById('createBtn');
+var createHTML = document.getElementById('createHTML');
+var resultEl = document.getElementById('result');
+var copyBtn = document.getElementById('copyBtn');
+var downloadLink = document.getElementById('downloadLink');
+var clearBtn = document.getElementById('clearBtn');
+
+clearBtn.addEventListener('click', function(){ inputEl.value=''; resultEl.textContent='اضغط "إنشاء" لتوليد الكود هنا...'; downloadLink.removeAttribute('href'); downloadLink.textContent='تنزيل الملف'; });
+
+createBtn.addEventListener('click', function(){
+  var text = inputEl.value;
+  if(!trim(text)){ alert('الرجاء لصق الأسئلة أولاً'); return }
+  var uniform = parseFloat(document.getElementById('uniformPoints').value) || 0;
+  var immediate = document.getElementById('showImmediately').value === 'true';
+  var questions = parseInput(text);
+  normalizeCorrectIndexes(questions);
+  // assign default points if uniform not set
+  if(uniform>0){ questions.forEach(function(q){ q.points = uniform }); }
+  var script = generateAppsScript(questions, uniform, immediate);
+  resultEl.textContent = script;
+  // prepare download link
+  var blob = new Blob([script], {type:'text/javascript;charset=utf-8'});
+  var url = URL.createObjectURL(blob);
+  downloadLink.href = url; downloadLink.download = 'create_quiz_apps_script.js'; downloadLink.textContent = 'تنزيل ملف JS';
+});
+
+createHTML.addEventListener('click', function(){
+  var text = inputEl.value;
+  if(!trim(text)){ alert('الرجاء لصق الأسئلة أولاً'); return }
+  var uniform = parseFloat(document.getElementById('uniformPoints').value) || 0;
+  var immediate = document.getElementById('showImmediately').value === 'true';
+  var questions = parseInput(text);
+  normalizeCorrectIndexes(questions);
+  if(uniform>0){ questions.forEach(function(q){ q.points = uniform }); }
+  var html = generateStandaloneHTML(questions, uniform, immediate);
+  resultEl.textContent = html;
+  var blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  var url = URL.createObjectURL(blob);
+  downloadLink.href = url; downloadLink.download = 'quiz_page.html'; downloadLink.textContent = 'تنزيل HTML';
+});
+
+copyBtn.addEventListener('click', function(){
+  var text = resultEl.textContent || '';
+  if(!text){ alert('لا يوجد نص لنسخه'); return }
+  navigator.clipboard.writeText(text).then(function(){ alert('تم النسخ بنجاح!'); }).catch(function(){ alert('فشل النسخ — يرجى نسخ النص يدوياً.'); });
+});
+
+</script>
+</body>
+</html>
