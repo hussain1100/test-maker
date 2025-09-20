@@ -2,26 +2,29 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>مُنشئ اختبار مباشر</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مُنشئ اختبار ذكي — Google Forms</title>
 <style>
 :root{--blue:#0b66ff;--midblue:#0b5ae6;--soft:#f3f8ff;--white:#ffffff}
-*{box-sizing:border-box;font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif}
-body{margin:0;background:linear-gradient(180deg,var(--soft),#fff);color:#0b2340}
-.wrap{max-width:980px;margin:28px auto;padding:20px;background:var(--white);border-radius:16px;box-shadow:0 10px 30px rgba(11,38,64,0.08)}
-header{display:flex;gap:16px;align-items:center}
-.logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--blue),var(--midblue));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:20px}
-h1{margin:0;font-size:20px}
-p.lead{margin:6px 0 18px;color:#234}
+body{margin:0;font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif;background:var(--soft);color:#0b2340}
+.wrap{max-width:980px;margin:30px auto;padding:25px;background:var(--white);border-radius:16px;box-shadow:0 12px 35px rgba(11,38,64,0.1)}
+header{display:flex;gap:16px;align-items:center;margin-bottom:20px}
+.logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--blue),var(--midblue));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:22px}
+h1{margin:0;font-size:22px}
+p.lead{margin:6px 0 18px;color:#234;font-size:15px}
+.grid{display:grid;grid-template-columns:1fr 380px;gap:18px}
+.card{background:linear-gradient(180deg,#fff,#fbfdff);padding:16px;border-radius:12px;border:1px solid rgba(11,102,255,0.08)}
+label.small{display:block;font-size:13px;color:#0b2340;margin-bottom:6px}
 textarea,input,select{width:100%;padding:10px;border-radius:8px;border:1px solid #d7e6ff;background:#fff;font-size:14px}
-textarea{min-height:200px;resize:vertical}
-.btn{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--blue);color:#fff;border:none;cursor:pointer;margin-top:6px}
-.btn.secondary{background:transparent;color:var(--blue);border:1px solid rgba(11,102,255,0.14)}
-.output{white-space:pre-wrap;background:#0b102033;padding:10px;border-radius:8px;overflow:auto;font-family:monospace;font-size:13px;margin-top:12px}
-.card{background:linear-gradient(180deg,#fff,#fbfdff);padding:14px;border-radius:12px;border:1px solid rgba(11,102,255,0.06);margin-bottom:16px}
-.q{margin-bottom:12px}
-.opt{display:block;margin:4px 0}
-.result{background:#f0f7ff;padding:12px;border-radius:8px;margin-top:12px;font-weight:600}
+textarea{min-height:300px;resize:vertical}
+.row{display:flex;gap:10px}
+.btn{display:inline-block;padding:10px 16px;border-radius:10px;background:var(--blue);color:#fff;border:none;cursor:pointer}
+.btn.secondary{background:transparent;color:var(--blue);border:1px solid rgba(11,102,255,0.15)}
+.hint{font-size:13px;color:#445;text-align:right}
+.output{white-space:pre-wrap;background:#0b102033;padding:10px;border-radius:8px;overflow:auto;font-family:monospace;font-size:13px;min-height:420px}
+.small-muted{font-size:12px;color:#567}
+footer{margin-top:16px;font-size:13px;color:#567;text-align:center}
+@media(max-width:980px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -29,152 +32,110 @@ textarea{min-height:200px;resize:vertical}
 <header>
 <div class="logo">Q</div>
 <div>
-<h1>مُنشئ اختبار مباشر</h1>
-<p class="lead">ألصق أسئلتك أدناه، اضغط "إنشاء الاختبار"، ثم قم بالإجابة مباشرة في الأسفل.</p>
+<h1>مُنشئ اختبار ذكي — Google Forms</h1>
+<p class="lead">ألصق اختبارك كما هو (بأي نمط). الأسئلة النصية يتم التعرف عليها تلقائياً بدون أي علامات. اضبط الدرجات وخيارات النتيجة، واضغط "إنشاء" لتحصل على كود Google Apps Script جاهز.</p>
 </div>
 </header>
-
+<div class="grid">
 <div class="card">
-<label>ألصق الأسئلة هنا (أو استخدم الصيغة المختصرة):</label>
-<textarea id="inputText" placeholder="مثال:
-1.ما هو مجموع 2+2؟
-أ.3
-ب.4
-ج.5
-2.ضع تعريف الإيمان:
-TEXT:
-الإيمان هو ..."></textarea>
-
-<label>درجة موحدة لكل الأسئلة (0 للسماح بدرجات فردية):</label>
-<input type="number" id="uniformPoints" placeholder="مثلاً 2">
-
-<div style="display:flex;gap:8px;flex-wrap:wrap;">
-<button class="btn" id="generateQuiz">إنشاء الاختبار</button>
-<button class="btn secondary" id="clearAll">مسح كل شيء</button>
+<label class="small">1) ألصق الأسئلة هنا:</label>
+<textarea id="inputText" placeholder="مثال:\n1. الشخص الذي يعبد الله كأنه يراه …\nأ. المسلم\nب. المؤمن\nج. المحسن\nد. لا شيء مما ذكر\n\n2. ما هو مجموع 2 و2؟\nأ.3\nب.4\nج.5\n\nسؤال نصي: عرف الإيمان …"></textarea>
+<div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+<div style="flex:1">
+<label class="small">2) درجة موحدة لكل الأسئلة؟ (اترك 0 لاستخدام درجات فردية)</label>
+<input id="uniformPoints" placeholder="مثلاً: 2" />
+</div>
+<div style="width:180px">
+<label class="small">3) إظهار النتيجة فوراً بعد الاختبار؟</label>
+<select id="showImmediately">
+<option value="true">نعم</option>
+<option value="false">لا</option>
+</select>
 </div>
 </div>
-
-<div class="card" id="quizContainer" style="display:none;">
-<h2>الاختبار</h2>
-<form id="quizForm"></form>
-<button class="btn" id="submitQuiz" style="display:none">إرسال الإجابات</button>
-<div id="quizResult"></div>
+<div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+<button class="btn" id="createBtn">إنشاء كود Google Forms</button>
+<button class="btn secondary" id="clearBtn">مسح</button>
+</div>
+<div style="margin-top:12px">
+<div class="small-muted">ملاحظات:</div>
+<ul class="small-muted">
+<li>الأسئلة النصية تُفهم تلقائياً إذا لم تُكتب خيارات أو تبدأ بصيغ: عرف، علل، أجب، عدد، ضع دائرة…</li>
+<li>أسئلة الاختيار من متعدد يجب أن تكون مصحوبة بالخيارات أ., ب., ج., د. أو a., b., c., d.</li>
+</ul>
 </div>
 </div>
-
+<div class="card">
+<label class="small">النتيجة: كود جاهز للنسخ</label>
+<div id="result" class="output">اضغط "إنشاء" لتوليد الكود هنا...</div>
+<div style="margin-top:10px;display:flex;gap:8px">
+<button class="btn" id="copyBtn">نسخ إلى الحافظة</button>
+<a id="downloadLink" style="text-decoration:none" class="btn secondary">تنزيل الملف</a>
+</div>
+<div style="margin-top:10px" class="hint">الصق الكود في <a href="https://script.google.com" target="_blank">Google Apps Script</a> لتوليد النموذج.</div>
+</div>
+</div>
+<footer>التصميم: أبيض وأزرق — مجاني 100% — مرن وذكي للتعرف على جميع أنواع الأسئلة.</footer>
+</div>
 <script>
-// --- Helpers ---
-function trim(s){return s?s.trim():''}
-function startsWithLetterDot(line){return /^[\u0621-\u06FFA-Za-z]\s*[\.|\)]/.test(line)}
-
+function trim(s){return s? s.trim():'';}
 function parseInput(text){
-  let lines = text.replace(/\r/g,'').split('\n');
-  let questions = [];
-  let i=0;
-  while(i<lines.length){
-    let line = trim(lines[i]);
-    if(!line){i++;continue;}
-    if(line.includes('|')){
-      let parts = line.split('|').map(trim);
-      let qtext = parts[0];
-      let choices = parts[1]? parts[1].split(';').map(trim):[];
-      let answerChar = parts[2]? parts[2].trim():'';
-      let points = parts[3]? parseFloat(parts[3]):0;
-      let correctIndex = -1;
-      if(answerChar){
-        let map={'أ':0,'ا':0,'a':0,'A':0,'ب':1,'b':1,'B':1,'ج':2,'c':2,'C':2,'د':3,'d':3,'D':3};
-        if(map[answerChar[0]]!==undefined) correctIndex=map[answerChar[0]];
-      }
-      questions.push({type:choices.length?'mcq':'text',question:qtext,choices,correctIndex,points});
-      i++; continue;
-    }
-    let qLine = line;
-    let m = qLine.match(/^\d+\.?\s*(.*)$/);
-    if(m) qLine = m[1];
-    let q={type:'mcq',question:qLine,choices:[],correctIndex:-1,points:0};
-    i++;
-    while(i<lines.length){
-      let nxt = trim(lines[i]); if(!nxt){i++;continue;}
-      if(/^\d+\.?\s+/.test(nxt)) break;
-      if(nxt.includes('|')) break;
-      if(nxt.toUpperCase().startsWith('TEXT:')){
-        let ans = nxt.substring(5).trim();
-        if(!ans){i++;if(i<lines.length){ans=trim(lines[i]);}}
-        q.type='text'; q.answerText=ans; i++; break;
-      }
-      if(startsWithLetterDot(nxt) || /^[أابجدة]\./.test(nxt)){
-        let opt = nxt.replace(/^[\u0621-\u06FFA-Za-z]\s*[\.|\)]/,'').trim();
-        let correct=/[✓✔\(صح\)]/.test(nxt);
-        q.choices.push(opt);
-        if(correct) q.correctIndex = q.choices.length-1;
-        i++; continue;
-      }
-      if(q.choices.length===0){q.question+=' '+nxt;i++; continue;}
-      break;
-    }
-    questions.push(q);
-  }
-  return questions;
+ var lines=text.replace(/\r/g,'').split('\n');
+ var questions=[]; var i=0;
+ while(i<lines.length){
+ var line=trim(lines[i]); if(!line){i++; continue;}
+ var q={question:'',choices:[],type:'mcq',correctIndex:-1,points:0};
+ q.question=line;
+ i++;
+ while(i<lines.length){
+ var nxt=trim(lines[i]);
+ if(!nxt){i++; continue;}
+ if(/^[أابجدةA-Za-z]\./.test(nxt)){ q.choices.push(nxt.replace(/^[أابجدةA-Za-z]\./,'')); i++; continue;}
+ if(/^(عرف|علل|أجب|عدد|ضع دائرة)/i.test(nxt) || (nxt.indexOf('.')===-1 && nxt.indexOf(' ')>0 && nxt.length>3 && q.choices.length===0)){break;}
+ if(/^[0-9]+\./.test(nxt)){break;}
+ i++;
+ }
+ if(q.choices.length===0){q.type='text';}
+ questions.push(q);
+ }
+ return questions;
 }
-
-// --- Generate Quiz ---
-document.getElementById('generateQuiz').addEventListener('click',()=>{
-  let text=document.getElementById('inputText').value;
-  if(!trim(text)){alert('ألصق الأسئلة أولاً'); return;}
-  let uniform=parseFloat(document.getElementById('uniformPoints').value)||0;
-  let questions=parseInput(text);
-  if(uniform>0){questions.forEach(q=>q.points=uniform);}
-  let form=document.getElementById('quizForm');
-  form.innerHTML='';
-  questions.forEach((q,idx)=>{
-    let div=document.createElement('div'); div.className='q';
-    let qtitle=document.createElement('div'); qtitle.innerHTML='<strong>السؤال '+(idx+1)+':</strong> '+q.question; div.appendChild(qtitle);
-    if(q.type==='mcq'){
-      q.choices.forEach((c,chIdx)=>{
-        let label=document.createElement('label'); label.className='opt';
-        label.innerHTML=`<input type="radio" name="q${idx}" value="${chIdx}"> ${c}`;
-        div.appendChild(label);
-      });
-    } else{
-      let ta=document.createElement('textarea');
-      ta.name='q'+idx;
-      ta.style.width='100%'; ta.style.height='80px'; ta.placeholder='أكتب إجابتك هنا...';
-      div.appendChild(ta);
-    }
-    form.appendChild(div);
-  });
-  document.getElementById('quizContainer').style.display='block';
-  document.getElementById('submitQuiz').style.display='inline-block';
-  document.getElementById('quizResult').innerHTML='';
-  window.currentQuestions=questions;
+function generateAppsScript(questions, uniformPoints, immediateRelease){
+ var arrLines=[];
+ questions.forEach(function(q){
+ var pts=(uniformPoints>0)? uniformPoints:1;
+ if(q.type==='mcq'){
+ var choices=q.choices.join(';');
+ var correctIdx=(q.correctIndex>=0)?q.correctIndex:0;
+ arrLines.push('"'+q.question.replace(/"/g,'\"')+' | '+choices+' | '+correctIdx+' | '+pts+'"');
+ }else{
+ arrLines.push('"'+q.question.replace(/"/g,'\"')+' | TEXT | | '+pts+'"');
+ }
+ });
+ var arrBlock=arrLines.join(',\n    ');
+ var releaseSetting=immediateRelease?'FormApp.QuizReleaseType.IMMEDIATE':'FormApp.QuizReleaseType.MANUAL';
+ var script='function createQuizFromText(){\n  var rawQuestions=[\n    '+arrBlock+'\n  ];\n  var form=FormApp.create("Quiz from Script");\n  form.setIsQuiz(true);\n  try{ form.setReleaseGrades('+releaseSetting+');}catch(e){}\n  rawQuestions.forEach(function(line){\n    var parts=line.split("|").map(function(s){return s.trim();});\n    var questionText=parts[0]; var choicesText=parts[1]; var correctIndex=parseInt(parts[2],10); var points=parseFloat(parts[3])||0;\n    if(choicesText==="TEXT"){\n      form.addTextItem().setTitle(questionText);\n    }else{\n      var item=form.addMultipleChoiceItem();\n      item.setTitle(questionText);\n      var createdChoices=choicesText.split(';').map(function(c,i){return item.createChoice(c,i===correctIndex);});\n      item.setChoices(createdChoices);\n      try{item.setPoints(points);}catch(e){}\n    }\n  });\n  Logger.log("Created quiz (open edit URL): "+form.getEditUrl());\n}';
+ return script;
+}
+var inputEl=document.getElementById('inputText');
+var createBtn=document.getElementById('createBtn');
+var resultEl=document.getElementById('result');
+var copyBtn=document.getElementById('copyBtn');
+var downloadLink=document.getElementById('downloadLink');
+var clearBtn=document.getElementById('clearBtn');
+clearBtn.addEventListener('click',function(){inputEl.value=''; resultEl.textContent='اضغط "إنشاء" لتوليد الكود هنا...'; downloadLink.removeAttribute('href'); downloadLink.textContent='تنزيل الملف';});
+createBtn.addEventListener('click',function(){
+ var text=inputEl.value; if(!trim(text)){alert('الرجاء لصق الأسئلة أولاً'); return;}
+ var uniform=parseFloat(document.getElementById('uniformPoints').value)||0;
+ var immediate=document.getElementById('showImmediately').value==='true';
+ var questions=parseInput(text);
+ var script=generateAppsScript(questions,uniform,immediate);
+ resultEl.textContent=script;
+ var blob=new Blob([script],{type:'text/javascript;charset=utf-8'});
+ var url=URL.createObjectURL(blob);
+ downloadLink.href=url; downloadLink.download='create_quiz_apps_script.js'; downloadLink.textContent='تنزيل ملف JS';
 });
-
-// --- Submit Quiz ---
-document.getElementById('submitQuiz').addEventListener('click',()=>{
-  let questions=window.currentQuestions||[];
-  let score=0, max=0;
-  questions.forEach((q,idx)=>{
-    let pts = q.points||1; max+=pts;
-    if(q.type==='mcq'){
-      let val=document.querySelector(`input[name="q${idx}"]:checked`);
-      let chosen=val?parseInt(val.value):-1;
-      if(chosen===q.correctIndex) score+=pts;
-    } else{
-      let val=document.querySelector(`[name="q${idx}"]`).value.trim();
-      if(q.answerText && val===q.answerText) score+=pts;
-    }
-  });
-  document.getElementById('quizResult').innerHTML=`<div class="result">الدرجة: ${score} من ${max}</div>`;
-});
-
-// --- Clear ---
-document.getElementById('clearAll').addEventListener('click',()=>{
-  document.getElementById('inputText').value='';
-  document.getElementById('uniformPoints').value='';
-  document.getElementById('quizContainer').style.display='none';
-  document.getElementById('quizForm').innerHTML='';
-  document.getElementById('quizResult').innerHTML='';
-});
+copyBtn.addEventListener('click',function(){var text=resultEl.textContent||''; if(!text){alert('لا يوجد نص لنسخه'); return;} navigator.clipboard.writeText(text).then(function(){alert('تم النسخ بنجاح!');}).catch(function(){alert('فشل النسخ، انسخ يدوياً.');});});
 </script>
 </body>
 </html>
