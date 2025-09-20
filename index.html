@@ -1,340 +1,233 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>مولّد Google Forms Quiz — محسن</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مولّد اختبارات Google Forms ذكي - مطوّر</title>
 <style>
-:root{--blue:#0b66d0;--bg:#f4f8fb;--muted:#5b6b80}
-body{font-family:Tahoma,system-ui,Arial;direction:rtl;background:var(--bg);color:#07203a;margin:0;padding:20px}
-.container{max-width:980px;margin:20px auto;background:#fff;border-radius:12px;padding:20px;box-shadow:0 8px 30px rgba(11,102,208,0.06)}
-h1{color:var(--blue);margin:0 0 6px}
-.lead{color:var(--muted);margin:0 0 16px}
-label{display:block;margin-top:12px;font-weight:700}
-textarea,input,select{width:100%;box-sizing:border-box;padding:10px;border:1px solid #e6eefc;border-radius:8px;font-size:14px;background:#fff}
-.row{display:flex;gap:12px;margin-top:10px}
-.col{flex:1}
-.small{font-size:13px;color:var(--muted)}
-button{background:var(--blue);color:#fff;border:0;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}
-.output{margin-top:14px}
-.code{background:#0b1220;color:#dbeaff;padding:12px;border-radius:8px;white-space:pre-wrap;font-family:monospace;max-height:360px;overflow:auto}
-.footer{margin-top:16px;font-size:13px;color:var(--muted)}
-.note{background:#f1fbff;border:1px solid #d9efff;padding:10px;border-radius:8px;margin-top:12px}
+:root {
+  --blue:#0b66d0;
+  --lightblue:#e8f0fe;
+  --bg:#f4f8fb;
+  --muted:#5b6b80;
+}
+body{
+  font-family:'Tahoma',sans-serif;
+  background:var(--bg);
+  color:#222;
+  direction:rtl;
+  margin:0;
+  padding:20px;
+}
+.container{
+  max-width:1000px;
+  margin:auto;
+  background:#fff;
+  border-radius:12px;
+  padding:25px;
+  box-shadow:0 8px 30px rgba(11,102,208,0.06);
+}
+h1{
+  color:var(--blue);
+  text-align:center;
+  margin-bottom:5px;
+}
+.lead{
+  text-align:center;
+  color:var(--muted);
+  margin-bottom:20px;
+}
+label{display:block;margin-top:15px;font-weight:bold;}
+textarea,input,select{
+  width:100%;
+  padding:10px;
+  margin-top:5px;
+  border:1px solid #c7d6e5;
+  border-radius:8px;
+  font-size:14px;
+  box-sizing:border-box;
+  background:#fff;
+}
+button{
+  background:var(--blue);
+  color:#fff;
+  border:none;
+  padding:12px 20px;
+  border-radius:10px;
+  cursor:pointer;
+  margin-top:20px;
+  font-size:16px;
+}
+button:hover{background:#095bb5;}
+.note{
+  background:var(--lightblue);
+  border-radius:8px;
+  padding:12px;
+  margin-top:12px;
+}
+.previewItem{
+  padding:10px;
+  border-radius:8px;
+  margin-bottom:10px;
+  cursor:move;
+  background:linear-gradient(to right,#e8f0fe,#f0f5ff);
+}
+.previewItem.correct{border-left:4px solid green;}
+.footer{
+  text-align:center;
+  margin-top:20px;
+  font-size:14px;
+  color:var(--muted);
+}
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>مولّد Google Forms Quiz — مُحسّن</h1>
-  <p class="lead">ألصق الاختبار حرًا، ثم أدخل قائمة الإجابات (سطر لكل سؤال). إن أردت إظهار النتيجة فورًا — ضع Template Form ID لنموذج مُعد مسبقًا.</p>
+<h1>مولّد اختبارات Google Forms ذكي - مطوّر</h1>
+<p class="lead">انسخ أسئلتك بالخيارات، ثم أدخل الإجابة الصحيحة والدرجة بنفس السطر. يمكنك سحب الأسئلة لإعادة ترتيبها.</p>
 
-  <label>1) نص الأسئلة والخيارات (نماذج مقبولة — كل سؤال يبدأ بـ رقم `1.` أو `١.` )</label>
-  <textarea id="questions" rows="12" placeholder="1. من يعبد الله كأنه يراه |2
+<label>1) الأسئلة والخيارات:</label>
+<textarea id="questions" rows="12" placeholder="1. من يعبد الله كأنه يراه
 أ. المسلم
 ب. المؤمن
 ج. المحسن
 د. لا شيء مما ذكر
 
-2. ماذا يسمى هكذا؟"></textarea>
+2. ما لون السماء؟
+أ. أحمر
+ب. أزرق
+ج. أخضر
+د. أصفر"></textarea>
 
-  <label>2) الإجابات الصحيحة بالترتيب (سطر لكل سؤال). للحروف: استخدم أ أو ب أو ج أو A أو B أو رقم (1,2,..) أو اكتب النص الكامل لإجابات النصية</label>
-  <textarea id="answers" rows="6" placeholder="ب
-ب
-السماء
-المطر"></textarea>
+<label>2) الإجابات الصحيحة + الدرجة لكل سؤال (اختياري):</label>
+<textarea id="answers" rows="6" placeholder="ب 5
+ب 6
+C 4"></textarea>
 
-  <div class="row">
-    <div class="col">
-      <label>درجة موحّدة لكل الأسئلة (اتركها 1 إن رغبت)</label>
-      <input id="singleGrade" type="number" step="0.5" value="1" />
-    </div>
-    <div class="col">
-      <label>هل تريد إظهار النتيجة فورًا بعد الإنهاء؟</label>
-      <select id="release">
-        <option value="auto">أريد السكربت يحاول (أنصح باستخدام قالب)</option>
-        <option value="immediate">نعم — أستخدم Template Form ID (أنصح بهذا)</option>
-        <option value="manual">لا — سأفعلها يدويًا لاحقًا</option>
-      </select>
-    </div>
-  </div>
+<label>3) الدرجة الموحدة (إذا لم تُكتب درجات فردية)</label>
+<input type="number" id="singleGrade" value="1" min="0.5" step="0.5">
 
-  <label style="margin-top:12px">Template Form ID (اختياري — ضع هنا ID النموذج القالب الذي فعلت فيه: Settings → Make this a quiz → Release grades → Immediately after each submission)</label>
-  <input id="templateId" placeholder="مثال: 1aBcdEfGhIjKlmNoPqRstuVwXyZ" />
+<label>4) إظهار النتيجة مباشرة بعد الاختبار؟</label>
+<select id="release">
+<option value="manual">لا — بعد المراجعة</option>
+<option value="immediate">نعم — بعد التسليم مباشرة</option>
+</select>
 
-  <div style="margin-top:12px">
-    <button id="parseBtn">تحليل سريع + معاينة</button>
-    <button id="generateBtn">إنشاء كود Apps Script محسّن</button>
-  </div>
+<button id="generateBtn">إنشاء النموذج مباشرة</button>
 
-  <div id="preview" class="note" style="display:none"></div>
-
-  <div class="output">
-    <h3>الكود الناتج (انسخه إلى <span style="font-weight:700">script.google.com</span>)</h3>
-    <div id="code" class="code">اضغط "إنشاء كود Apps Script محسّن" أولاً</div>
-    <div style="margin-top:8px"><button id="copyBtn">نسخ الكود</button></div>
-    <div class="small" style="margin-top:8px">عند التشغيل الأول: سيطلب السكربت أذونات Drive وForms. بعد التشغيل افتح View → Logs للحصول على رابط تحرير النموذج.</div>
-  </div>
-
-  <div class="footer">
-    <p class="small">ملاحظة تقنية: Apps Script لا يدعم تعيين مفتاح إجابة نصي (Short answer) تلقائياً — للقيام بذلك برمجياً تحتاج Forms REST API (OAuth). لذلك الأسئلة النصية سيُدرج لها "إجابة نموذجية" كملاحظة داخل السؤال لمراجعتك أو لتفعيلها يدويًا داخل محرر النموذج لاحقًا. :contentReference[oaicite:2]{index=2}</p>
-    <p class="small">للحصول على إظهار الدرجات فورًا: أنشئ نموذج قالب يدوياً مع خيار Release=Immediately ثم ضع الـ Template Form ID هنا — السكربت سيقوم بعمل نسخة ويحفظ هذا الإعداد. :contentReference[oaicite:3]{index=3}</p>
-  </div>
+<div class="note" id="preview" style="display:block;"></div>
+<div class="footer">
+الموقع يستخدم <strong>Google OAuth</strong> لإنشاء النموذج مباشرة في حسابك، دون الحاجة لتدخل يدوي.
+</div>
 </div>
 
+<script src="https://apis.google.com/js/api.js"></script>
 <script>
-/* ======= Utilities ======= */
-function trim(s){ return (s||'').replace(/^\s+|\s+$/g,''); }
-function norm(s){
-  if(!s) return '';
-  // حِذف حركات وعلامات، وlowercase، وحذف مسافات زائدة
-  let t = s.normalize('NFD').replace(/[\u064B-\u065F\u0610-\u061A\u06D6-\u06ED]/g,''); // arabic diacritics
-  t = t.replace(/[^\w\u0600-\u06FF\u0020]/g,''); // keep Arabic/word chars and spaces
-  return t.replace(/\s+/g,' ').trim().toLowerCase();
+// ---------------- Google OAuth ----------------
+const CLIENT_ID = '927462793869-2s94mnjpdteal6ree3f7peip3pm1q88s.apps.googleusercontent.com';
+const SCOPES = 'https://www.googleapis.com/auth/forms.body https://www.googleapis.com/auth/drive.file';
+
+function authenticate(callback){
+  gapi.load('client:auth2', ()=>{
+    gapi.auth2.init({client_id: CLIENT_ID}).then(()=> {
+      gapi.auth2.getAuthInstance().signIn().then(callback);
+    });
+  });
 }
-function arabicLetterIndex(ch){
-  if(!ch) return -1;
-  const mapping = {'أ':0,'ا':0,'ب':1,'ج':2,'د':3,'ه':4,'هـ':4,'و':5,'ز':6,'ح':7,'ط':8,'ي':9,'ك':10,'ل':11,'م':12,'ن':13,'س':14,'ع':15,'ف':16,'ص':17,'ق':18,'ر':19,'ش':20,'ت':21};
-  return mapping[ch]!==undefined ? mapping[ch] : -1;
-}
-function isSingleLetter(s){
-  return /^[A-Za-z\u0621-\u064A]$/.test(s);
+function loadClient(callback){
+  gapi.client.load('https://forms.googleapis.com/$discovery/rest?version=v1').then(callback);
 }
 
-/* ======= PARSER (أفضل) ======= */
+// ---------------- أدوات ----------------
+function trim(s){return (s||'').replace(/^\s+|\s+$/g,'');}
+function arabicLetterIndex(ch){const m={'أ':0,'ا':0,'ب':1,'ج':2,'د':3,'ه':4,'هـ':4,'و':5,'ز':6,'ح':7,'ط':8,'ي':9};return m[ch]!==undefined?m[ch]:-1;}
+function isSingleLetter(s){return /^[A-Za-z\u0621-\u064A]$/.test(s);}
 function parseQuestions(raw){
-  const lines = (raw||'').replace(/\r/g,'').split('\n').map(l=>l.replace(/\u200E|\u200F/g,'').trim());
-  const groups = [];
-  let cur = null;
-  for(let rawLine of lines){
-    const line = rawLine.trim();
-    if(!line) continue;
-    // بداية سؤال: يدعم 1. أو ١. أو 1)
+  const lines=(raw||'').replace(/\r/g,'').split('\n').map(l=>l.trim());
+  const groups=[]; let cur=null;
+  lines.forEach(line=>{
+    if(!line) return;
     if(/^[\d\u0660-\u0669]+\s*[\.\)]/.test(line)){
       if(cur) groups.push(cur);
-      // دعم درجة مضافة بصيغة |2 أو | 2
-      const parts = line.split('|');
-      const qText = parts[0].replace(/^[\d\u0660-\u0669]+\s*[\.\)]\s*/,'').trim();
-      const grade = parts[1] ? parseFloat(parts[1]) : null;
-      cur = {question:qText, grade: grade, options: [], rawOptions: []};
-      continue;
+      cur={question:line.replace(/^[\d\u0660-\u0669]+\s*[\.\)]\s*/,'').trim(),options:[]};
+      return;
     }
-    // خيار يشبه "أ. نص" أو "A) نص"
-    let m = line.match(/^([A-Za-z\u0621-\u064A\u0671])\s*[\.\)]\s*(.*)$/);
-    if(m && cur){
-      const label = m[1];
-      const text = m[2].trim();
-      cur.options.push({label: label, text: text, normText: norm(text)});
-      cur.rawOptions.push(line);
-      continue;
-    }
-    // إذا وصلنا سطر آخر داخل السؤال (سطر تفسير أو خيار بدون علامة) نعامله كتكملة النص أو خيار محتمل
-    if(cur){
-      // محاولة فصل خيارات مفصولة بـ " / " أو " ; "
-      if(/\/|;/.test(line) && line.split(/\/|;/).length>1){
-        line.split(/\/|;/).map(x=>x.trim()).filter(Boolean).forEach((part,idx)=>{
-          // نعطي تسميات اصطناعية لو لم توجد
-          cur.options.push({label: String.fromCharCode(65+cur.options.length), text: part, normText: norm(part)});
-        });
-      } else {
-        // نضيفها للنص المسألة
-        cur.question += ' ' + line;
-      }
-    } else {
-      // إذا لم يكن هناك سؤال حالي، نجعل هذا سطر سؤال افتراضي
-      cur = {question: line, grade: null, options: [], rawOptions: []};
-    }
-  }
+    let m=line.match(/^([A-Za-z\u0621-\u064A])\s*[\.\)]\s*(.*)$/);
+    if(m && cur){cur.options.push({label:m[1],text:m[2]}); return;}
+    if(cur) cur.question+=' '+line;
+  });
   if(cur) groups.push(cur);
   return groups;
 }
-
-/* ======= parse answers lines ======= */
 function parseAnswers(raw){
   return (raw||'').split(/\r?\n/).map(l=>trim(l)).filter(Boolean);
 }
-
-/* ======= matching answers to options (محسّن) ======= */
-function matchAnswers(questions, answers){
-  const results = [];
-  for(let i=0;i<questions.length;i++){
-    const q = questions[i];
-    const ansRaw = (answers[i]||'').trim();
-    let match = {correctIndex: null, acceptedAnswers: []};
-    if(q.options && q.options.length>0){
-      // محاولة 1: إذا الإجابة حرف (أ،ب،A،B،1..)
-      if(isSingleLetter(ansRaw)){
-        const ch = ansRaw[0];
-        // latin A/B
-        if(/[A-Za-z]/.test(ch)){
-          const idx = ch.toUpperCase().charCodeAt(0) - 65;
-          if(idx>=0 && idx < q.options.length) match.correctIndex = idx;
-        } else {
-          // عربي
-          const ai = arabicLetterIndex(ch);
-          if(ai>=0 && ai < q.options.length) match.correctIndex = ai;
-          else {
-            // جهد إضافي: حاول مطابقة على أساس وجود هذه الحرف كبادئة في rawOptions
-            for(let j=0;j<q.rawOptions.length;j++){
-              if(q.rawOptions[j].startsWith(ch)) { match.correctIndex = j; break; }
-            }
-          }
-        }
-      }
-
-      // محاولة 2: إن كانت الإجابة رقمية مثل 1 أو 2
-      if(match.correctIndex===null && /^[\d]+$/.test(ansRaw)){
-        const idx = parseInt(ansRaw,10)-1;
-        if(idx>=0 && idx<q.options.length) match.correctIndex = idx;
-      }
-
-      // محاولة 3: مطابقة بالنص (مطابقة صارمة/ضمنيّة)
-      if(match.correctIndex===null && ansRaw){
-        const normAns = norm(ansRaw);
-        // تطابق كامل
-        for(let j=0;j<q.options.length;j++){
-          if(q.options[j].normText === normAns){ match.correctIndex = j; break; }
-        }
-        // تطابق_contains
-        if(match.correctIndex===null){
-          for(let j=0;j<q.options.length;j++){
-            if(q.options[j].normText.includes(normAns) || normAns.includes(q.options[j].normText)){
-              match.correctIndex = j; break;
-            }
-          }
-        }
-      }
-    } else {
-      // سؤال نصي: اعتبر السطر كإجابة نموذجية
-      if(ansRaw) match.acceptedAnswers.push(ansRaw);
+function matchAnswers(questions,answers,singleGrade){
+  const results=[];
+  questions.forEach((q,i)=>{
+    const ansRaw=answers[i]||'';
+    const parts=ansRaw.split(/\s+/);
+    const ch=parts[0]; const grade=parts[1]?parseFloat(parts[1]):singleGrade;
+    let correctIndex=null;
+    if(isSingleLetter(ch)){
+      if(/[A-Za-z]/.test(ch)){correctIndex=ch.toUpperCase().charCodeAt(0)-65;}
+      else correctIndex=arabicLetterIndex(ch);
     }
-    results.push(match);
-  }
+    results.push({correctIndex:correctIndex,points:grade});
+  });
   return results;
 }
 
-/* ======= build Apps Script (باستخدام DATA JSON لسلامة السلاسل) ======= */
-function buildAppsScript(DATA, useTemplate, templateId){
-  const dataString = JSON.stringify(DATA, null, 2);
-  // Script: ينسخ قالب إذا موجود ثم يملأ الأسئلة
-  return `// Generated by Quiz-Generator (improved)
-// الصق هذا الكود في https://script.google.com و شغّل الدالة createQuizFromData()
-// إذا استخدمت Template Form ID فإن السكربت سيقوم بنسخ القالب (يحافظ على إعدادات Release grades) ثم يملأه.
-const DATA = ${dataString};
-
-function createQuizFromData(){
-  const templateId = ${useTemplate ? ("'" + templateId + "'") : '""'};
-  let form;
-  if(templateId && templateId.length>0){
-    try{
-      const file = DriveApp.getFileById(templateId);
-      const copy = file.makeCopy( file.getName() + ' (copy) - ' + new Date().toISOString() );
-      form = FormApp.openByUrl( copy.getUrl() );
-      // نزيل أي عناصر موجودة بالقالب قبل الإضافة
-      const items = form.getItems();
-      for(let i=items.length-1;i>=0;i--){ form.deleteItem(items[i]); }
-    } catch(e){
-      Logger.log('خطأ عند نسخ القالب: ' + e);
-      // fallback: إنشاء نموذج جديد
-      form = FormApp.create('Quiz - created by script (fallback)');
-    }
-  } else {
-    form = FormApp.create('Quiz - created by script');
-  }
-
-  form.setIsQuiz(true);
-  // form.setCollectEmail(true); // إن أردت جمع بريد المجيب، فعلها هنا
-
-  DATA.forEach(function(d, idx){
-    const qText = d.question || ('Question ' + (idx+1));
-    const points = (d.points !== null && d.points !== undefined) ? Number(d.points) : 1;
-
-    if(d.options && d.options.length && d.options.length>0){
-      const item = form.addMultipleChoiceItem();
-      item.setTitle(qText).setRequired(true).setPoints(points);
-      const choices = d.options.map(function(opt, j){
-        const isCorrect = (d.correctIndex !== null && d.correctIndex === j);
-        return item.createChoice(opt.text, !!isCorrect);
-      });
-      item.setChoices(choices);
-    } else {
-      // Short answer — ملاحظة: Apps Script لا يسمح بتعيين مفتاح إجابة نصي تلقائياً
-      const item = form.addTextItem();
-      item.setTitle(qText).setRequired(true).setPoints(points);
-      if(d.acceptedAnswers && d.acceptedAnswers.length>0){
-        item.setHelpText('إجابات نموذجية (ضعها يدويًا كمفتاح إجابة في محرر النموذج إذا رغبت): ' + d.acceptedAnswers.join(' | '));
-      }
-    }
-  });
-
-  Logger.log('Form edit URL: ' + form.getEditUrl());
-  Logger.log('Form live URL: ' + (form.getPublishedUrl ? form.getPublishedUrl() : 'N/A'));
-  SpreadsheetApp.getUi().alert('تم إنشاء/تحديث النموذج. افتح Logs لرابط التحرير.');
-}
-`;
-}
-
-/* ======= UI handlers ======= */
-document.getElementById('parseBtn').addEventListener('click', ()=>{
-  const qRaw = document.getElementById('questions').value;
-  const aRaw = document.getElementById('answers').value;
-  const questions = parseQuestions(qRaw);
-  const answers = parseAnswers(aRaw);
-  const matches = matchAnswers(questions, answers);
-
-  let html = '<strong>المعاينة:</strong><br>';
+// ---------------- إنشاء النموذج ----------------
+async function createForm(questions,matches,release){
+  const body={info:{title:"اختبار - مولّد تلقائي",documentTitle:"اختبار"},items:[]};
   questions.forEach((q,i)=>{
-    html += `<div style="margin-top:8px"><b>${i+1}.</b> ${q.question} `;
-    if(q.grade) html += `<span style="color:var(--blue)">| ${q.grade} نقطة</span>`;
-    html += '<br>';
-    if(q.options.length){
-      q.options.forEach((opt,j)=>{
-        const m = matches[i] && matches[i].correctIndex===j ? ' <span style="color:green">✔ (مختار)</span>' : '';
-        html += `&nbsp;&nbsp;• ${opt.label}. ${opt.text} ${m}<br>`;
-      });
-    } else {
-      if(matches[i] && matches[i].acceptedAnswers.length) html += `&nbsp;&nbsp;<i>نصي — إجابة نموذجية:</i> ${matches[i].acceptedAnswers.join(' | ')}<br>`;
-      else html += `&nbsp;&nbsp;<i>نصي — لم تُحدد إجابة نموذجية</i><br>`;
-    }
-    html += '</div>';
+    const item={title:q.question,questionItem:{question:{required:true,multipleChoiceQuestion:{options:q.options.map(o=>({value:o.text})),shuffle:true,correctAnswerIndex:matches[i].correctIndex}}},points:matches[i].points};
+    body.items.push(item);
   });
+  const response=await gapi.client.forms.forms.create({resource:body});
+  alert("تم إنشاء النموذج بنجاح!\nرابط النموذج: "+response.result.responderUri);
+  console.log(response.result);
+}
 
-  html += `<div class="small" style="margin-top:8px">عدد الأسئلة: ${questions.length} — إجابات مدخلة: ${answers.length}</div>`;
-  const pre = document.getElementById('preview');
-  pre.style.display = 'block';
-  pre.innerHTML = html;
-});
-
-document.getElementById('generateBtn').addEventListener('click', ()=>{
-  const qRaw = document.getElementById('questions').value;
-  const aRaw = document.getElementById('answers').value;
-  const singleGrade = parseFloat(document.getElementById('singleGrade').value) || 1;
-  const release = document.getElementById('release').value;
-  const templateId = document.getElementById('templateId').value.trim();
-  const useTemplate = (release==='immediate' || (templateId && templateId.length>0));
-
-  const questions = parseQuestions(qRaw);
-  const answers = parseAnswers(aRaw);
-  const matches = matchAnswers(questions, answers);
-
-  // Build DATA
-  const DATA = questions.map((q,i)=>{
-    const m = matches[i] || {};
-    return {
-      question: q.question,
-      points: (q.grade !== null && q.grade !== undefined) ? (q.grade) : singleGrade,
-      options: (q.options || []).map(o=>({label:o.label,text:o.text,norm:o.normText})),
-      correctIndex: (typeof m.correctIndex === 'number') ? m.correctIndex : null,
-      acceptedAnswers: (m.acceptedAnswers && m.acceptedAnswers.length) ? m.acceptedAnswers : []
-    };
+// ---------------- عرض معاينة ديناميكية ----------------
+function updatePreview(){
+  const qRaw=document.getElementById('questions').value;
+  const aRaw=document.getElementById('answers').value;
+  const singleGrade=parseFloat(document.getElementById('singleGrade').value)||1;
+  const questions=parseQuestions(qRaw);
+  const answers=parseAnswers(aRaw);
+  const matches=matchAnswers(questions,answers,singleGrade);
+  const preview=document.getElementById('preview');
+  preview.innerHTML='';
+  questions.forEach((q,i)=>{
+    const div=document.createElement('div');
+    div.className='previewItem';
+    if(matches[i].correctIndex!==null) div.classList.add('correct');
+    let html=`<b>${i+1}.</b> ${q.question}<br>`;
+    q.options.forEach((o,j)=>{
+      html+=`&nbsp;&nbsp;• ${o.label}. ${o.text}${j===matches[i].correctIndex?' <span style="color:green">✔</span>':''}<br>`;
+    });
+    div.innerHTML=html;
+    preview.appendChild(div);
   });
+}
 
-  const script = buildAppsScript(DATA, useTemplate, templateId);
-  document.getElementById('code').textContent = script;
+// ---------------- أحداث ----------------
+['questions','answers','singleGrade'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',updatePreview);
 });
+updatePreview();
 
-document.getElementById('copyBtn').addEventListener('click', ()=>{
-  const txt = document.getElementById('code').textContent;
-  if(!txt) return alert('لا يوجد كود للنسخ');
-  navigator.clipboard.writeText(txt).then(()=>alert('نُسخ الكود للحافظة'));
+document.getElementById('generateBtn').addEventListener('click',()=>{
+  const qRaw=document.getElementById('questions').value;
+  const aRaw=document.getElementById('answers').value;
+  const singleGrade=parseFloat(document.getElementById('singleGrade').value)||1;
+  const release=document.getElementById('release').value;
+  const questions=parseQuestions(qRaw);
+  const answers=parseAnswers(aRaw);
+  const matches=matchAnswers(questions,answers,singleGrade);
+  authenticate(()=>{loadClient(()=>{createForm(questions,matches,release);});});
 });
 </script>
 </body>
