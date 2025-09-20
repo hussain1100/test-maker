@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>مولّد اختبارات Google Forms ذكي - مصحح</title>
+<title>مولّد اختبارات Google Forms جاهز</title>
 <style>
 :root {
   --blue:#0b66d0;
@@ -69,7 +69,6 @@ button:hover{background:#095bb5;}
   padding:10px;
   border-radius:8px;
   margin-bottom:10px;
-  cursor:move;
   background:linear-gradient(to right,#e8f0fe,#f0f5ff);
 }
 .previewItem.correct{border-left:4px solid green;}
@@ -83,18 +82,85 @@ button:hover{background:#095bb5;}
 </head>
 <body>
 <div class="container">
-<h1>مولّد اختبارات Google Forms ذكي - مصحح</h1>
-<p class="lead">انسخ أسئلتك بالخيارات، ثم أدخل الإجابة الصحيحة والدرجة بنفس السطر. يمكنك سحب الأسئلة لإعادة ترتيبها.</p>
+<h1>مولّد اختبارات Google Forms جاهز</h1>
+<p class="lead">تم تجهيز 10 أسئلة تجربة. اضغط زر "إنشاء النموذج" لإنشاء الاختبار مباشرة على حسابك.</p>
 
 <label>1) الأسئلة والخيارات:</label>
-<textarea id="questions" rows="12" placeholder="1. من يعبد الله كأنه يراه
+<textarea id="questions" rows="20">
+1. الشخص الذي يعبد الله كأنه يراه يسمى:
 أ. المسلم
 ب. المؤمن
 ج. المحسن
-د. لا شيء مما ذكر"></textarea>
+د. لا شيء مما ذكر
 
-<label>2) الإجابات الصحيحة + الدرجة لكل سؤال (اختياري):</label>
-<textarea id="answers" rows="6" placeholder="ب 5"></textarea>
+2. ما لون السماء؟
+أ. أحمر
+ب. أزرق
+ج. أخضر
+د. أصفر
+
+3. أي من الخيارات التالية فاكهة؟
+أ. تفاح
+ب. جزر
+ج. بطاطا
+د. خيار
+
+4. عاصمة فرنسا هي:
+أ. باريس
+ب. روما
+ج. مدريد
+د. لندن
+
+5. الرقم الزوجي الأكبر من 5 هو:
+أ. 5
+ب. 6
+ج. 7
+د. 8
+
+6. من كتب "ألف ليلة وليلة"؟
+أ. جبران خليل جبران
+ب. مجنون ليلى
+ج. مجهول
+د. أنيس منصور
+
+7. أكبر كوكب في المجموعة الشمسية هو:
+أ. الأرض
+ب. المريخ
+ج. المشتري
+د. زحل
+
+8. أي من الحروف التالية من الأبجدية العربية؟
+أ. A
+ب. ب
+ج. C
+د. D
+
+9. ما الحيوان الذي يصنع العسل؟
+أ. نحلة
+ب. نملة
+ج. نحلة ملكة
+د. دبور
+
+10. رمز الماء في الكيمياء هو:
+أ. H2O
+ب. O2
+ج. CO2
+د. NaCl
+</textarea>
+
+<label>2) الإجابات الصحيحة + الدرجة لكل سؤال:</label>
+<textarea id="answers" rows="12">
+ب 1
+ب 1
+أ 1
+أ 1
+ب 1
+ج 1
+ج 1
+ب 1
+أ 1
+أ 1
+</textarea>
 
 <label>3) الدرجة الموحدة (إذا لم تُكتب درجات فردية)</label>
 <input type="number" id="singleGrade" value="1" min="0.5" step="0.5">
@@ -107,7 +173,7 @@ button:hover{background:#095bb5;}
 
 <button id="generateBtn">إنشاء النموذج مباشرة</button>
 
-<div class="note" id="preview" style="display:block;"></div>
+<div class="note" id="preview"></div>
 <div class="footer">
 الموقع يستخدم <strong>Google OAuth</strong> لإنشاء النموذج مباشرة في حسابك.
 </div>
@@ -117,8 +183,6 @@ button:hover{background:#095bb5;}
 <script>
 // ---------- إعداد Google API ----------
 const CLIENT_ID = '927462793869-2s94mnjpdteal6ree3f7peip3pm1q88s.apps.googleusercontent.com';
-const SCOPES = 'https://www.googleapis.com/auth/forms.body https://www.googleapis.com/auth/drive.file';
-
 function authenticate(callback){
   gapi.load('client:auth2', ()=>{
     gapi.auth2.init({client_id: CLIENT_ID}).then(()=>{
@@ -126,7 +190,6 @@ function authenticate(callback){
     });
   });
 }
-
 function loadClient(callback){
   gapi.client.load('https://forms.googleapis.com/$discovery/rest?version=v1').then(callback);
 }
@@ -183,7 +246,7 @@ async function createForm(questions,matches,release){
   console.log(response.result);
 }
 
-// ---------- معاينة ديناميكية ----------
+// ---------- معاينة ----------
 function updatePreview(){
   const qRaw=document.getElementById('questions').value;
   const aRaw=document.getElementById('answers').value;
@@ -205,13 +268,11 @@ function updatePreview(){
     preview.appendChild(div);
   });
 }
-
-// ---------- أحداث ----------
 ['questions','answers','singleGrade'].forEach(id=>{document.getElementById(id).addEventListener('input',updatePreview);});
 updatePreview();
 
+// ---------- زر إنشاء النموذج ----------
 document.getElementById('generateBtn').addEventListener('click',()=>{
-  console.log("تم الضغط على الزر!");
   const qRaw=document.getElementById('questions').value;
   const aRaw=document.getElementById('answers').value;
   const singleGrade=parseFloat(document.getElementById('singleGrade').value)||1;
@@ -219,12 +280,7 @@ document.getElementById('generateBtn').addEventListener('click',()=>{
   const questions=parseQuestions(qRaw);
   const answers=parseAnswers(aRaw);
   const matches=matchAnswers(questions,answers,singleGrade);
-  authenticate(()=>{
-    loadClient(()=>{
-      console.log("API جاهز، جاري إنشاء النموذج...");
-      createForm(questions,matches,release);
-    });
-  });
+  authenticate(()=>{loadClient(()=>{createForm(questions,matches,release);});});
 });
 </script>
 </body>
