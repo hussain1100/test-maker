@@ -33,13 +33,13 @@ footer{margin-top:16px;font-size:13px;color:#567;text-align:center}
 <div class="logo">Q</div>
 <div>
 <h1>مُنشئ اختبار ذكي — Google Forms</h1>
-<p class="lead">ألصق اختبارك كما هو (بأي نمط). الأسئلة النصية يتم التعرف عليها تلقائياً بدون أي علامات. اضبط الدرجات وخيارات النتيجة، واضغط "إنشاء" لتحصل على كود Google Apps Script جاهز.</p>
+<p class="lead">ألصق اختبارك كما هو. الأسئلة النصية تُكتشف تلقائيًا. اضبط الدرجات وخيارات النتيجة، واضغط "إنشاء" لتحصل على كود Google Apps Script جاهز.</p>
 </div>
 </header>
 <div class="grid">
 <div class="card">
 <label class="small">1) ألصق الأسئلة هنا:</label>
-<textarea id="inputText" placeholder="مثال:\n1. الشخص الذي يعبد الله كأنه يراه …\nأ. المسلم\nب. المؤمن\nج. المحسن\nد. لا شيء مما ذكر\n\n2. ما هو مجموع 2 و2؟\nأ.3\nب.4\nج.5\n\nسؤال نصي: عرف الإيمان …"></textarea>
+<textarea id="inputText" placeholder="مثال:\n1. الشخص الذي يعبد الله كأنه يراه …\nأ. المسلم\nب. المؤمن\nج. المحسن\nد. لا شيء مما ذكر\n\nسؤال نصي: عرف الإيمان"></textarea>
 <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
 <div style="flex:1">
 <label class="small">2) درجة موحدة لكل الأسئلة؟ (اترك 0 لاستخدام درجات فردية)</label>
@@ -83,38 +83,37 @@ function parseInput(text){
  var lines=text.replace(/\r/g,'').split('\n');
  var questions=[]; var i=0;
  while(i<lines.length){
- var line=trim(lines[i]); if(!line){i++; continue;}
- var q={question:'',choices:[],type:'mcq',correctIndex:-1,points:0};
- q.question=line;
- i++;
- while(i<lines.length){
- var nxt=trim(lines[i]);
- if(!nxt){i++; continue;}
- if(/^[أابجدةA-Za-z]\./.test(nxt)){ q.choices.push(nxt.replace(/^[أابجدةA-Za-z]\./,'')); i++; continue;}
- if(/^(عرف|علل|أجب|عدد|ضع دائرة)/i.test(nxt) || (nxt.indexOf('.')===-1 && nxt.indexOf(' ')>0 && nxt.length>3 && q.choices.length===0)){break;}
- if(/^[0-9]+\./.test(nxt)){break;}
- i++;
- }
- if(q.choices.length===0){q.type='text';}
- questions.push(q);
+  var line=trim(lines[i]); if(!line){i++; continue;}
+  var q={question:'',choices:[],type:'mcq',correctIndex:-1,points:0};
+  q.question=line; i++;
+  while(i<lines.length){
+   var nxt=trim(lines[i]);
+   if(!nxt){i++; continue;}
+   if(/^[أابجدةA-Za-z]\./.test(nxt)){ q.choices.push(nxt.replace(/^[أابجدةA-Za-z]\./,'')); i++; continue;}
+   if(/^(عرف|علل|أجب|عدد|ضع دائرة)/i.test(nxt) || (nxt.indexOf('.')===-1 && nxt.indexOf(' ')>0 && nxt.length>3 && q.choices.length===0)){break;}
+   if(/^[0-9]+\./.test(nxt)){break;}
+   i++;
+  }
+  if(q.choices.length===0){q.type='text';}
+  questions.push(q);
  }
  return questions;
 }
 function generateAppsScript(questions, uniformPoints, immediateRelease){
- var arrLines=[];
+ var arrLines=[]; 
  questions.forEach(function(q){
- var pts=(uniformPoints>0)? uniformPoints:1;
- if(q.type==='mcq'){
- var choices=q.choices.join(';');
- var correctIdx=(q.correctIndex>=0)?q.correctIndex:0;
- arrLines.push('"'+q.question.replace(/"/g,'\"')+' | '+choices+' | '+correctIdx+' | '+pts+'"');
- }else{
- arrLines.push('"'+q.question.replace(/"/g,'\"')+' | TEXT | | '+pts+'"');
- }
+  var pts=(uniformPoints>0)? uniformPoints:1;
+  if(q.type==='mcq'){
+   var choices=q.choices.join(';');
+   var correctIdx=(q.correctIndex>=0)?q.correctIndex:0;
+   arrLines.push('"'+q.question.replace(/"/g,'\\"')+' | '+choices+' | '+correctIdx+' | '+pts+'"');
+  } else{
+   arrLines.push('"'+q.question.replace(/"/g,'\\"')+' | TEXT | | '+pts+'"');
+  }
  });
  var arrBlock=arrLines.join(',\n    ');
  var releaseSetting=immediateRelease?'FormApp.QuizReleaseType.IMMEDIATE':'FormApp.QuizReleaseType.MANUAL';
- var script='function createQuizFromText(){\n  var rawQuestions=[\n    '+arrBlock+'\n  ];\n  var form=FormApp.create("Quiz from Script");\n  form.setIsQuiz(true);\n  try{ form.setReleaseGrades('+releaseSetting+');}catch(e){}\n  rawQuestions.forEach(function(line){\n    var parts=line.split("|").map(function(s){return s.trim();});\n    var questionText=parts[0]; var choicesText=parts[1]; var correctIndex=parseInt(parts[2],10); var points=parseFloat(parts[3])||0;\n    if(choicesText==="TEXT"){\n      form.addTextItem().setTitle(questionText);\n    }else{\n      var item=form.addMultipleChoiceItem();\n      item.setTitle(questionText);\n      var createdChoices=choicesText.split(';').map(function(c,i){return item.createChoice(c,i===correctIndex);});\n      item.setChoices(createdChoices);\n      try{item.setPoints(points);}catch(e){}\n    }\n  });\n  Logger.log("Created quiz (open edit URL): "+form.getEditUrl());\n}';
+ var script='function createQuizFromText(){\n  var rawQuestions=[\n    '+arrBlock+'\n  ];\n  var form=FormApp.create("Quiz from Script");\n  form.setIsQuiz(true);\n  try{ form.setReleaseGrades('+releaseSetting+');}catch(e){}\n  rawQuestions.forEach(function(line){\n    var parts=line.split("|").map(function(s){return s.trim();});\n    var questionText=parts[0]; var choicesText=parts[1]; var correctIndex=parseInt(parts[2],10); var points=parseFloat(parts[3])||0;\n    if(choicesText==="TEXT"){\n      form.addTextItem().setTitle(questionText);\n    }else{\n      var item=form.addMultipleChoiceItem();\n      item.setTitle(questionText);\n      var createdChoices=choicesText.split(";").map(function(c,i){return item.createChoice(c,i===correctIndex);});\n      item.setChoices(createdChoices);\n      try{item.setPoints(points);}catch(e){}\n    }\n  });\n  Logger.log("Created quiz (open edit URL): "+form.getEditUrl());\n}';
  return script;
 }
 var inputEl=document.getElementById('inputText');
