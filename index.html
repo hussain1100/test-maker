@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>مولّد اختبارات Google Forms جاهز</title>
+<title>مولّد كود Google Forms</title>
 <style>
 :root {
   --blue:#0b66d0;
@@ -20,7 +20,7 @@ body{
   padding:20px;
 }
 .container{
-  max-width:1000px;
+  max-width:900px;
   margin:auto;
   background:#fff;
   border-radius:12px;
@@ -31,11 +31,6 @@ h1{
   color:var(--blue);
   text-align:center;
   margin-bottom:5px;
-}
-.lead{
-  text-align:center;
-  color:var(--muted);
-  margin-bottom:20px;
 }
 label{display:block;margin-top:15px;font-weight:bold;}
 textarea,input,select{
@@ -64,151 +59,53 @@ button:hover{background:#095bb5;}
   border-radius:8px;
   padding:12px;
   margin-top:12px;
-}
-.previewItem{
-  padding:10px;
-  border-radius:8px;
-  margin-bottom:10px;
-  background:linear-gradient(to right,#e8f0fe,#f0f5ff);
-}
-.previewItem.correct{border-left:4px solid green;}
-.footer{
-  text-align:center;
-  margin-top:20px;
-  font-size:14px;
-  color:var(--muted);
+  white-space: pre-wrap;
 }
 </style>
 </head>
 <body>
 <div class="container">
-<h1>مولّد اختبارات Google Forms جاهز</h1>
-<p class="lead">تم تجهيز 10 أسئلة تجربة. اضغط زر "إنشاء النموذج" لإنشاء الاختبار مباشرة على حسابك.</p>
+<h1>مولّد كود Google Forms</h1>
+<p>اكتب الأسئلة والخيارات والإجابات الصحيحة، ثم اضغط زر "إنشاء الكود" للحصول على كود Google Apps Script جاهز للنسخ.</p>
 
-<label>1) الأسئلة والخيارات:</label>
-<textarea id="questions" rows="20">
-1. الشخص الذي يعبد الله كأنه يراه يسمى:
-أ. المسلم
-ب. المؤمن
-ج. المحسن
-د. لا شيء مما ذكر
-
-2. ما لون السماء؟
+<label>1) الأسئلة والخيارات (صيغة كل سؤال: رقم. نص السؤال ثم كل خيار سطر جديد يبدأ بالرمز أ/ب/ج/د):</label>
+<textarea id="questions" rows="15" placeholder="مثال:
+1. ما لون السماء؟
 أ. أحمر
 ب. أزرق
 ج. أخضر
 د. أصفر
+"></textarea>
 
-3. أي من الخيارات التالية فاكهة؟
-أ. تفاح
-ب. جزر
-ج. بطاطا
-د. خيار
-
-4. عاصمة فرنسا هي:
-أ. باريس
-ب. روما
-ج. مدريد
-د. لندن
-
-5. الرقم الزوجي الأكبر من 5 هو:
-أ. 5
-ب. 6
-ج. 7
-د. 8
-
-6. من كتب "ألف ليلة وليلة"؟
-أ. جبران خليل جبران
-ب. مجنون ليلى
-ج. مجهول
-د. أنيس منصور
-
-7. أكبر كوكب في المجموعة الشمسية هو:
-أ. الأرض
-ب. المريخ
-ج. المشتري
-د. زحل
-
-8. أي من الحروف التالية من الأبجدية العربية؟
-أ. A
-ب. ب
-ج. C
-د. D
-
-9. ما الحيوان الذي يصنع العسل؟
-أ. نحلة
-ب. نملة
-ج. نحلة ملكة
-د. دبور
-
-10. رمز الماء في الكيمياء هو:
-أ. H2O
-ب. O2
-ج. CO2
-د. NaCl
-</textarea>
-
-<label>2) الإجابات الصحيحة + الدرجة لكل سؤال:</label>
-<textarea id="answers" rows="12">
+<label>2) الإجابات الصحيحة + الدرجة لكل سؤال (صيغة: رمز الإجابة مسافة الدرجة):</label>
+<textarea id="answers" rows="10" placeholder="مثال:
 ب 1
-ب 1
-أ 1
-أ 1
-ب 1
-ج 1
-ج 1
-ب 1
-أ 1
-أ 1
-</textarea>
+أ 2
+"></textarea>
 
-<label>3) الدرجة الموحدة (إذا لم تُكتب درجات فردية)</label>
+<label>3) الدرجة الموحدة لكل سؤال إذا لم يتم تحديد درجات فردية:</label>
 <input type="number" id="singleGrade" value="1" min="0.5" step="0.5">
 
-<label>4) إظهار النتيجة مباشرة بعد الاختبار؟</label>
-<select id="release">
-<option value="manual">لا — بعد المراجعة</option>
-<option value="immediate">نعم — بعد التسليم مباشرة</option>
-</select>
+<button id="generateBtn">إنشاء الكود</button>
 
-<button id="generateBtn">إنشاء النموذج مباشرة</button>
-
-<div class="note" id="preview"></div>
-<div class="footer">
-الموقع يستخدم <strong>Google OAuth</strong> لإنشاء النموذج مباشرة في حسابك.
-</div>
+<label>4) معاينة الكود:</label>
+<div class="note" id="preview">سيظهر الكود هنا بعد الضغط على الزر.</div>
 </div>
 
-<script src="https://apis.google.com/js/api.js"></script>
 <script>
-// ---------- إعداد Google API ----------
-const CLIENT_ID = '927462793869-2s94mnjpdteal6ree3f7peip3pm1q88s.apps.googleusercontent.com';
-function authenticate(callback){
-  gapi.load('client:auth2', ()=>{
-    gapi.auth2.init({client_id: CLIENT_ID}).then(()=>{
-      gapi.auth2.getAuthInstance().signIn().then(callback);
-    });
-  });
-}
-function loadClient(callback){
-  gapi.client.load('https://forms.googleapis.com/$discovery/rest?version=v1').then(callback);
-}
-
 // ---------- أدوات ----------
 function trim(s){return (s||'').replace(/^\s+|\s+$/g,'');}
-function arabicLetterIndex(ch){const m={'أ':0,'ا':0,'ب':1,'ج':2,'د':3,'ه':4,'هـ':4,'و':5,'ز':6,'ح':7,'ط':8,'ي':9};return m[ch]!==undefined?m[ch]:-1;}
-function isSingleLetter(s){return /^[A-Za-z\u0621-\u064A]$/.test(s);}
 function parseQuestions(raw){
-  const lines=(raw||'').replace(/\r/g,'').split('\n').map(l=>l.trim());
+  const lines=(raw||'').split(/\r?\n/).map(l=>l.trim());
   const groups=[]; let cur=null;
   lines.forEach(line=>{
     if(!line) return;
-    if(/^[\d\u0660-\u0669]+\s*[\.\)]/.test(line)){
+    if(/^[\d]+\s*[\.\)]/.test(line)){
       if(cur) groups.push(cur);
-      cur={question:line.replace(/^[\d\u0660-\u0669]+\s*[\.\)]\s*/,'').trim(),options:[]};
+      cur={question:line.replace(/^[\d]+\s*[\.\)]\s*/,'').trim(),options:[]};
       return;
     }
-    let m=line.match(/^([A-Za-z\u0621-\u064A])\s*[\.\)]\s*(.*)$/);
+    let m=line.match(/^([أ-دA-D])\s*[\.\)]?\s*(.*)$/);
     if(m && cur){cur.options.push({label:m[1],text:m[2]}); return;}
     if(cur) cur.question+=' '+line;
   });
@@ -224,63 +121,40 @@ function matchAnswers(questions,answers,singleGrade){
     const ansRaw=answers[i]||'';
     const parts=ansRaw.split(/\s+/);
     const ch=parts[0]; const grade=parts[1]?parseFloat(parts[1]):singleGrade;
-    let correctIndex=null;
-    if(isSingleLetter(ch)){
-      if(/[A-Za-z]/.test(ch)){correctIndex=ch.toUpperCase().charCodeAt(0)-65;}
-      else correctIndex=arabicLetterIndex(ch);
-    }
-    results.push({correctIndex:correctIndex,points:grade});
+    results.push({correct:ch,points:grade});
   });
   return results;
 }
 
-// ---------- إنشاء النموذج ----------
-async function createForm(questions,matches,release){
-  const body={info:{title:"اختبار - مولّد تلقائي",documentTitle:"اختبار"},items:[]};
-  questions.forEach((q,i)=>{
-    const item={title:q.question,questionItem:{question:{required:true,multipleChoiceQuestion:{options:q.options.map(o=>({value:o.text})),shuffle:true,correctAnswerIndex:matches[i].correctIndex}}},points:matches[i].points};
-    body.items.push(item);
-  });
-  const response=await gapi.client.forms.forms.create({resource:body});
-  alert("تم إنشاء النموذج بنجاح!\nرابط النموذج: "+response.result.responderUri);
-  console.log(response.result);
-}
-
-// ---------- معاينة ----------
-function updatePreview(){
-  const qRaw=document.getElementById('questions').value;
-  const aRaw=document.getElementById('answers').value;
-  const singleGrade=parseFloat(document.getElementById('singleGrade').value)||1;
-  const questions=parseQuestions(qRaw);
-  const answers=parseAnswers(aRaw);
+// ---------- توليد كود Google Apps Script ----------
+function generateGASCode(questions,answers,singleGrade){
   const matches=matchAnswers(questions,answers,singleGrade);
-  const preview=document.getElementById('preview');
-  preview.innerHTML='';
+  let code="function createForm() {\n  var form = FormApp.create('اختبار مولّد');\n";
   questions.forEach((q,i)=>{
-    const div=document.createElement('div');
-    div.className='previewItem';
-    if(matches[i].correctIndex!==null) div.classList.add('correct');
-    let html=`<b>${i+1}.</b> ${q.question}<br>`;
-    q.options.forEach((o,j)=>{
-      html+=`&nbsp;&nbsp;• ${o.label}. ${o.text}${j===matches[i].correctIndex?' <span style="color:green">✔</span>':''}<br>`;
+    const qText=q.question.replace(/'/g,"\\'");
+    code+="  var item = form.addMultipleChoiceItem();\n";
+    code+="  item.setTitle('"+qText+"')\n";
+    code+="      .setChoices([\n";
+    q.options.forEach((opt,j)=>{
+      const correct=(opt.label===matches[i].correct)?'.setCorrectAnswer(true)':'';
+      const optText=opt.text.replace(/'/g,"\\'");
+      code+="        item.createChoice('"+optText+"')"+correct+",\n";
     });
-    div.innerHTML=html;
-    preview.appendChild(div);
+    code+="      ]);\n";
+    code+="  item.setPoints("+matches[i].points+");\n";
   });
+  code+="  Logger.log('Form created: ' + form.getEditUrl());\n}";
+  return code;
 }
-['questions','answers','singleGrade'].forEach(id=>{document.getElementById(id).addEventListener('input',updatePreview);});
-updatePreview();
 
-// ---------- زر إنشاء النموذج ----------
+// ---------- زر ----------
 document.getElementById('generateBtn').addEventListener('click',()=>{
   const qRaw=document.getElementById('questions').value;
   const aRaw=document.getElementById('answers').value;
   const singleGrade=parseFloat(document.getElementById('singleGrade').value)||1;
-  const release=document.getElementById('release').value;
   const questions=parseQuestions(qRaw);
-  const answers=parseAnswers(aRaw);
-  const matches=matchAnswers(questions,answers,singleGrade);
-  authenticate(()=>{loadClient(()=>{createForm(questions,matches,release);});});
+  const code=generateGASCode(questions,parseAnswers(aRaw),singleGrade);
+  document.getElementById('preview').textContent=code;
 });
 </script>
 </body>
