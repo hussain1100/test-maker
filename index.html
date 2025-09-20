@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>مولّد كود Google Forms</title>
+<title>مولّد كود Google Forms مصحح</title>
 <style>
 :root {
   --blue:#0b66d0;
@@ -33,7 +33,7 @@ h1{
   margin-bottom:5px;
 }
 label{display:block;margin-top:15px;font-weight:bold;}
-textarea,input,select{
+textarea,input{
   width:100%;
   padding:10px;
   margin-top:5px;
@@ -65,23 +65,14 @@ button:hover{background:#095bb5;}
 </head>
 <body>
 <div class="container">
-<h1>مولّد كود Google Forms</h1>
-<p>اكتب الأسئلة والخيارات والإجابات الصحيحة، ثم اضغط زر "إنشاء الكود" للحصول على كود Google Apps Script جاهز للنسخ.</p>
+<h1>مولّد كود Google Forms مصحح</h1>
+<p>اكتب الأسئلة والخيارات والإجابات الصحيحة ثم اضغط "إنشاء الكود".</p>
 
-<label>1) الأسئلة والخيارات (صيغة كل سؤال: رقم. نص السؤال ثم كل خيار سطر جديد يبدأ بالرمز أ/ب/ج/د):</label>
-<textarea id="questions" rows="15" placeholder="مثال:
-1. ما لون السماء؟
-أ. أحمر
-ب. أزرق
-ج. أخضر
-د. أصفر
-"></textarea>
+<label>1) الأسئلة والخيارات (صيغة كل سؤال: رقم. نص السؤال، ثم خيارات كل سطر يبدأ بالرمز أ/ب/ج/د):</label>
+<textarea id="questions" rows="15"></textarea>
 
 <label>2) الإجابات الصحيحة + الدرجة لكل سؤال (صيغة: رمز الإجابة مسافة الدرجة):</label>
-<textarea id="answers" rows="10" placeholder="مثال:
-ب 1
-أ 2
-"></textarea>
+<textarea id="answers" rows="10"></textarea>
 
 <label>3) الدرجة الموحدة لكل سؤال إذا لم يتم تحديد درجات فردية:</label>
 <input type="number" id="singleGrade" value="1" min="0.5" step="0.5">
@@ -135,13 +126,14 @@ function generateGASCode(questions,answers,singleGrade){
     code+="  var item = form.addMultipleChoiceItem();\n";
     code+="  item.setTitle('"+qText+"')\n";
     code+="      .setChoices([\n";
-    q.options.forEach((opt,j)=>{
-      const correct=(opt.label===matches[i].correct)?'.setCorrectAnswer(true)':'';
+    q.options.forEach(opt=>{
+      const correct=(opt.label===matches[i].correct)?'true':'false';
       const optText=opt.text.replace(/'/g,"\\'");
-      code+="        item.createChoice('"+optText+"')"+correct+",\n";
+      code+="        item.createChoice('"+optText+"', "+correct+"),\n";
     });
-    code+="      ]);\n";
-    code+="  item.setPoints("+matches[i].points+");\n";
+    code+="      ])\n";
+    code+="      .setPoints("+matches[i].points+")\n";
+    code+="      .setRequired(true);\n";
   });
   code+="  Logger.log('Form created: ' + form.getEditUrl());\n}";
   return code;
