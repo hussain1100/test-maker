@@ -121,6 +121,7 @@ function matchAnswers(questions,answers,singleGrade){
 function generateGASCode(questions,answers,singleGrade){
   const matches=matchAnswers(questions,answers,singleGrade);
   let code="function createForm() {\n  var form = FormApp.create('اختبار مولّد');\n";
+  code+="  form.setIsQuiz(true);\n"; // تفعيل Quiz قبل إضافة الأسئلة
   questions.forEach((q,i)=>{
     const qText=q.question.replace(/'/g,"\\'");
     code+="  var item = form.addMultipleChoiceItem();\n";
