@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>مولّد اختبارات Google Forms ذكي - مطوّر</title>
+<title>مولّد اختبارات Google Forms ذكي - مصحح</title>
 <style>
 :root {
   --blue:#0b66d0;
@@ -83,7 +83,7 @@ button:hover{background:#095bb5;}
 </head>
 <body>
 <div class="container">
-<h1>مولّد اختبارات Google Forms ذكي - مطوّر</h1>
+<h1>مولّد اختبارات Google Forms ذكي - مصحح</h1>
 <p class="lead">انسخ أسئلتك بالخيارات، ثم أدخل الإجابة الصحيحة والدرجة بنفس السطر. يمكنك سحب الأسئلة لإعادة ترتيبها.</p>
 
 <label>1) الأسئلة والخيارات:</label>
@@ -91,18 +91,10 @@ button:hover{background:#095bb5;}
 أ. المسلم
 ب. المؤمن
 ج. المحسن
-د. لا شيء مما ذكر
-
-2. ما لون السماء؟
-أ. أحمر
-ب. أزرق
-ج. أخضر
-د. أصفر"></textarea>
+د. لا شيء مما ذكر"></textarea>
 
 <label>2) الإجابات الصحيحة + الدرجة لكل سؤال (اختياري):</label>
-<textarea id="answers" rows="6" placeholder="ب 5
-ب 6
-C 4"></textarea>
+<textarea id="answers" rows="6" placeholder="ب 5"></textarea>
 
 <label>3) الدرجة الموحدة (إذا لم تُكتب درجات فردية)</label>
 <input type="number" id="singleGrade" value="1" min="0.5" step="0.5">
@@ -117,28 +109,29 @@ C 4"></textarea>
 
 <div class="note" id="preview" style="display:block;"></div>
 <div class="footer">
-الموقع يستخدم <strong>Google OAuth</strong> لإنشاء النموذج مباشرة في حسابك، دون الحاجة لتدخل يدوي.
+الموقع يستخدم <strong>Google OAuth</strong> لإنشاء النموذج مباشرة في حسابك.
 </div>
 </div>
 
 <script src="https://apis.google.com/js/api.js"></script>
 <script>
-// ---------------- Google OAuth ----------------
+// ---------- إعداد Google API ----------
 const CLIENT_ID = '927462793869-2s94mnjpdteal6ree3f7peip3pm1q88s.apps.googleusercontent.com';
 const SCOPES = 'https://www.googleapis.com/auth/forms.body https://www.googleapis.com/auth/drive.file';
 
 function authenticate(callback){
   gapi.load('client:auth2', ()=>{
-    gapi.auth2.init({client_id: CLIENT_ID}).then(()=> {
+    gapi.auth2.init({client_id: CLIENT_ID}).then(()=>{
       gapi.auth2.getAuthInstance().signIn().then(callback);
     });
   });
 }
+
 function loadClient(callback){
   gapi.client.load('https://forms.googleapis.com/$discovery/rest?version=v1').then(callback);
 }
 
-// ---------------- أدوات ----------------
+// ---------- أدوات ----------
 function trim(s){return (s||'').replace(/^\s+|\s+$/g,'');}
 function arabicLetterIndex(ch){const m={'أ':0,'ا':0,'ب':1,'ج':2,'د':3,'ه':4,'هـ':4,'و':5,'ز':6,'ح':7,'ط':8,'ي':9};return m[ch]!==undefined?m[ch]:-1;}
 function isSingleLetter(s){return /^[A-Za-z\u0621-\u064A]$/.test(s);}
@@ -178,7 +171,7 @@ function matchAnswers(questions,answers,singleGrade){
   return results;
 }
 
-// ---------------- إنشاء النموذج ----------------
+// ---------- إنشاء النموذج ----------
 async function createForm(questions,matches,release){
   const body={info:{title:"اختبار - مولّد تلقائي",documentTitle:"اختبار"},items:[]};
   questions.forEach((q,i)=>{
@@ -190,7 +183,7 @@ async function createForm(questions,matches,release){
   console.log(response.result);
 }
 
-// ---------------- عرض معاينة ديناميكية ----------------
+// ---------- معاينة ديناميكية ----------
 function updatePreview(){
   const qRaw=document.getElementById('questions').value;
   const aRaw=document.getElementById('answers').value;
@@ -213,13 +206,12 @@ function updatePreview(){
   });
 }
 
-// ---------------- أحداث ----------------
-['questions','answers','singleGrade'].forEach(id=>{
-  document.getElementById(id).addEventListener('input',updatePreview);
-});
+// ---------- أحداث ----------
+['questions','answers','singleGrade'].forEach(id=>{document.getElementById(id).addEventListener('input',updatePreview);});
 updatePreview();
 
 document.getElementById('generateBtn').addEventListener('click',()=>{
+  console.log("تم الضغط على الزر!");
   const qRaw=document.getElementById('questions').value;
   const aRaw=document.getElementById('answers').value;
   const singleGrade=parseFloat(document.getElementById('singleGrade').value)||1;
@@ -227,7 +219,12 @@ document.getElementById('generateBtn').addEventListener('click',()=>{
   const questions=parseQuestions(qRaw);
   const answers=parseAnswers(aRaw);
   const matches=matchAnswers(questions,answers,singleGrade);
-  authenticate(()=>{loadClient(()=>{createForm(questions,matches,release);});});
+  authenticate(()=>{
+    loadClient(()=>{
+      console.log("API جاهز، جاري إنشاء النموذج...");
+      createForm(questions,matches,release);
+    });
+  });
 });
 </script>
 </body>
